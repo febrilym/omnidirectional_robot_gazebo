@@ -1,0 +1,27 @@
+# Controller configuration untuk Gazebo ROS Control
+# HARUS di root namespace
+
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+
+# INDIVIDUAL VELOCITY CONTROLLERS
+first_wheel_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: robot_1_first_wheel_joint
+  pid: {p: 100.0, i: 10.0, d: 1.0}
+
+second_wheel_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: robot_1_second_wheel_joint
+  pid: {p: 100.0, i: 10.0, d: 1.0}
+
+third_wheel_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: robot_1_third_wheel_joint
+  pid: {p: 100.0, i: 10.0, d: 1.0}
+
+forth_wheel_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: robot_1_forth_wheel_joint
+  pid: {p: 100.0, i: 10.0, d: 1.0}

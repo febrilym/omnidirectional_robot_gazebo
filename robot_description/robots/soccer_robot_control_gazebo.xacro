@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="robot_gazebo_systems" params="robot_name">
+
+    <!-- Plugin utama pengontrolan joint (ROS1) -->
+    <gazebo>
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>/</robotNamespace>
+        <controlPeriod>0.004</controlPeriod>
+        <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      </plugin>
+    </gazebo>
+
+    <!-- Wheel Transmissions (ROS1) -->
+    <transmission name="${robot_name}_first_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${robot_name}_first_wheel_joint">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${robot_name}_first_motor">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        <mechanicalReduction>10</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${robot_name}_second_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${robot_name}_second_wheel_joint">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${robot_name}_second_motor">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        <mechanicalReduction>10</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${robot_name}_third_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${robot_name}_third_wheel_joint">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${robot_name}_third_motor">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        <mechanicalReduction>10</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${robot_name}_forth_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${robot_name}_forth_wheel_joint">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${robot_name}_forth_motor">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        <mechanicalReduction>10</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+
+    <!-- Plugin for joint state publisher (ROS1) -->
+    <gazebo>
+      <plugin name="${robot_name}_joint_state" filename="libgazebo_ros_joint_state_publisher.so">
+        <robotNamespace>${robot_name}</robotNamespace>
+        <update_rate>20</update_rate>
+
+        <joint_name>${robot_name}_first_wheel_joint</joint_name>
+        <joint_name>${robot_name}_second_wheel_joint</joint_name>
+        <joint_name>${robot_name}_third_wheel_joint</joint_name>
+        <joint_name>${robot_name}_forth_wheel_joint</joint_name>
+
+        <joint_name>${robot_name}_r1_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r2_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r3_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r4_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r5_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r6_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r7_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r8_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r9_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r10_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r11_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r12_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r13_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r14_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r15_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r16_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r17_w1_roller_joint</joint_name>
+        <joint_name>${robot_name}_r18_w1_roller_joint</joint_name>
+
+        <joint_name>${robot_name}_r1_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r2_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r3_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r4_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r5_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r6_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r7_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r8_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r9_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r10_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r11_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r12_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r13_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r14_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r15_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r16_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r17_w2_roller_joint</joint_name>
+        <joint_name>${robot_name}_r18_w2_roller_joint</joint_name>
+
+        <joint_name>${robot_name}_r1_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r2_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r3_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r4_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r5_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r6_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r7_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r8_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r9_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r10_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r11_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r12_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r13_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r14_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r15_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r16_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r17_w3_roller_joint</joint_name>
+        <joint_name>${robot_name}_r18_w3_roller_joint</joint_name>
+
+        <joint_name>${robot_name}_r1_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r2_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r3_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r4_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r5_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r6_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r7_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r8_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r9_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r10_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r11_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r12_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r13_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r14_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r15_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r16_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r17_w4_roller_joint</joint_name>
+        <joint_name>${robot_name}_r18_w4_roller_joint</joint_name>
+      </plugin>
+    </gazebo>
+
+
+    <!-- LIDAR (ROS1 - libgazebo_ros_laser) -->
+    <gazebo reference="${robot_name}_lidar_link">
+      <sensor name="${robot_name}_laser" type="ray">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>false</visualize>
+        <update_rate>30</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14159</min_angle>
+              <max_angle>3.14159</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.27</min>
+            <max>14</max>
+            <resolution>0.015</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.03</stddev>
+          </noise>
+        </ray>
+        <plugin name="${robot_name}_laser_controller" filename="libgazebo_ros_laser.so">
+          <topicName>/${robot_name}/scan</topicName>
+          <frameName>${robot_name}_lidar_frame</frameName>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+
+    <!-- Odometry / Pose Publisher (ROS1) -->
+    <gazebo>
+      <plugin filename="libgazebo_ros_p3d.so" name="${robot_name}_gazebo_ros_p3d">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>50.0</updateRate>
+        <bodyName>${robot_name}_base_footprint</bodyName>
+        <topicName>/${robot_name}/odom</topicName>
+        <gaussianNoise>0.01</gaussianNoise>
+        <frameName>world</frameName>
+        <xyzOffsets>0 0 0</xyzOffsets>
+        <rpyOffsets>0 0 0</rpyOffsets>
+      </plugin>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

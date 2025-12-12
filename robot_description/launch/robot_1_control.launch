@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="controller_manager" type="spawner" name="robot_1_controllers"
+        args="joint_state_controller velocity_controller" output="screen"/>
+</launch>
