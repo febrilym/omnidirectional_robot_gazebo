@@ -1,0 +1,9 @@
+<launch>
+  <arg name="robot_name" default="robot_1"/>
+
+  <param name="robot_description"
+         command="$(find xacro)/xacro --inorder $(find robot_description)/robots/soccer_robot.urdf.xacro robot_name:=$(arg robot_name)" />
+
+  <node pkg="rviz" type="rviz" name="rviz"
+        args="-d $(find robot_description)/config/view_robot.rviz"/>
+</launch>

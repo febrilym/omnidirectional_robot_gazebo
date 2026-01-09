@@ -1,0 +1,453 @@
+<?xml version="1.0"?>
+<robot name="soccer_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- include -->
+    <xacro:include filename="$(find robot_description)/robots/parts/base/base.xacro"/>
+    <xacro:include filename="$(find robot_description)/robots/parts/omni_camera/omni_camera.xacro"/>
+    <xacro:include filename="$(find robot_description)/robots/parts/omni_wheel/omni_wheel.xacro"/>
+    <xacro:include filename="$(find robot_description)/robots/parts/roller/roller.xacro"/>
+    <xacro:include filename="$(find robot_description)/robots/soccer_robot_control_gazebo.xacro"/>
+
+    <!-- argument -->
+    <arg name="robot_name" default="robot_1"/>
+
+    <!-- base footprint -->
+    <link name="$(arg robot_name)_base_footprint"/>
+
+    <!-- base -->
+    <xacro:base_v0 robot_name="$(arg robot_name)" parent="$(arg robot_name)_base_footprint">
+        <origin xyz="0.0 0.0 0.018" rpy="0 0 0"/>
+    </xacro:base_v0>
+
+    <!-- camera -->
+    <xacro:camera_v0 prefix="$(arg robot_name)" parent="$(arg robot_name)_base_link">
+        <origin xyz="0.0 0.0 0.558" rpy="0 0 0"/>
+    </xacro:camera_v0>
+
+    <!-- wheels -->
+    <!-- 1st wheel -->
+    <xacro:wheel_v0 prefix="$(arg robot_name)_first" parent="$(arg robot_name)_base_link">
+        <origin xyz="0.17 -0.17 0.032" rpy="${pi/2} 0.0 ${-3*pi/4}"/>
+        <axis xyz="0.0 0.0 1.0"/>
+    </xacro:wheel_v0>
+
+    <!-- roller -->
+    <xacro:roller_v0 prefix="$(arg robot_name)_r1_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.0 -0.04 -0.0092" rpy="0.0 ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r2_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.02571 -0.03064 -0.0092" rpy="${2*pi/9} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r3_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.03939 -0.00695 -0.0092" rpy="${2*pi/4.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r4_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.03464 0.02 -0.0092" rpy="${2*pi/3} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r5_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.01368 0.03759 -0.0092" rpy="${2*pi/2.25} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r6_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.01368 0.03759 -0.0092" rpy="${2*pi/1.8} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r7_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.03464 0.02 -0.0092" rpy="${2*pi/1.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r8_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.03939 -0.00695 -0.0092" rpy="${2*pi/1.285714286} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r9_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.02571 -0.03064 -0.0092" rpy="${2*pi/1.125} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+
+    <xacro:roller_v0 prefix="$(arg robot_name)_r10_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.0 0.04 0.0092" rpy="0.0 ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r11_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.02571 0.03064 0.0092" rpy="${2*pi/9} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r12_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.03939 0.00695 0.0092" rpy="${2*pi/4.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r13_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.03464 -0.02 0.0092" rpy="${2*pi/3} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r14_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="0.01368 -0.03759 0.0092" rpy="${2*pi/2.25} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r15_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.01368 -0.03759 0.0092" rpy="${2*pi/1.8} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r16_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.03464 -0.02 0.0092" rpy="${2*pi/1.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r17_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.03939 0.00695 0.0092" rpy="${2*pi/1.285714286} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r18_w1" parent="$(arg robot_name)_first_wheel_link">
+        <origin xyz="-0.02571 0.03064 0.0092" rpy="${2*pi/1.125} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+
+    <!-- 2nd wheel -->
+    <xacro:wheel_v0 prefix="$(arg robot_name)_second" parent="$(arg robot_name)_base_link">
+        <origin xyz="0.17 0.17 0.032" rpy="${pi/2} 0.0 ${-pi/4}"/>
+        <axis xyz="0.0 0.0 1.0"/>
+    </xacro:wheel_v0>
+
+    <!-- roller -->
+    <xacro:roller_v0 prefix="$(arg robot_name)_r1_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.0 -0.04 -0.0092" rpy="0.0 ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r2_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.02571 -0.03064 -0.0092" rpy="${2*pi/9} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r3_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.03939 -0.00695 -0.0092" rpy="${2*pi/4.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r4_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.03464 0.02 -0.0092" rpy="${2*pi/3} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r5_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.01368 0.03759 -0.0092" rpy="${2*pi/2.25} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r6_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.01368 0.03759 -0.0092" rpy="${2*pi/1.8} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r7_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.03464 0.02 -0.0092" rpy="${2*pi/1.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r8_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.03939 -0.00695 -0.0092" rpy="${2*pi/1.285714286} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r9_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.02571 -0.03064 -0.0092" rpy="${2*pi/1.125} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+
+    <xacro:roller_v0 prefix="$(arg robot_name)_r10_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.0 0.04 0.0092" rpy="0.0 ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r11_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.02571 0.03064 0.0092" rpy="${2*pi/9} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r12_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.03939 0.00695 0.0092" rpy="${2*pi/4.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r13_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.03464 -0.02 0.0092" rpy="${2*pi/3} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r14_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="0.01368 -0.03759 0.0092" rpy="${2*pi/2.25} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r15_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.01368 -0.03759 0.0092" rpy="${2*pi/1.8} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r16_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.03464 -0.02 0.0092" rpy="${2*pi/1.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r17_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.03939 0.00695 0.0092" rpy="${2*pi/1.285714286} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r18_w2" parent="$(arg robot_name)_second_wheel_link">
+        <origin xyz="-0.02571 0.03064 0.0092" rpy="${2*pi/1.125} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+
+    <!-- 3rd wheel -->
+    <xacro:wheel_v0 prefix="$(arg robot_name)_third" parent="$(arg robot_name)_base_link">
+        <origin xyz="-0.17 0.17 0.032" rpy="${pi/2} 0.0 ${pi/4}"/>
+        <axis xyz="0.0 0.0 1.0"/>
+    </xacro:wheel_v0>
+
+    <!-- roller -->
+    <xacro:roller_v0 prefix="$(arg robot_name)_r1_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.0 -0.04 -0.0092" rpy="0.0 ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r2_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.02571 -0.03064 -0.0092" rpy="${2*pi/9} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r3_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.03939 -0.00695 -0.0092" rpy="${2*pi/4.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r4_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.03464 0.02 -0.0092" rpy="${2*pi/3} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r5_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.01368 0.03759 -0.0092" rpy="${2*pi/2.25} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r6_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.01368 0.03759 -0.0092" rpy="${2*pi/1.8} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r7_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.03464 0.02 -0.0092" rpy="${2*pi/1.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r8_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.03939 -0.00695 -0.0092" rpy="${2*pi/1.285714286} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r9_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.02571 -0.03064 -0.0092" rpy="${2*pi/1.125} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+
+    <xacro:roller_v0 prefix="$(arg robot_name)_r10_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.0 0.04 0.0092" rpy="0.0 ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r11_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.02571 0.03064 0.0092" rpy="${2*pi/9} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r12_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.03939 0.00695 0.0092" rpy="${2*pi/4.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r13_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.03464 -0.02 0.0092" rpy="${2*pi/3} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r14_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="0.01368 -0.03759 0.0092" rpy="${2*pi/2.25} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r15_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.01368 -0.03759 0.0092" rpy="${2*pi/1.8} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r16_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.03464 -0.02 0.0092" rpy="${2*pi/1.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r17_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.03939 0.00695 0.0092" rpy="${2*pi/1.285714286} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r18_w3" parent="$(arg robot_name)_third_wheel_link">
+        <origin xyz="-0.02571 0.03064 0.0092" rpy="${2*pi/1.125} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+
+    <!-- 4th wheel -->
+    <xacro:wheel_v0 prefix="$(arg robot_name)_forth" parent="$(arg robot_name)_base_link">
+        <origin xyz="-0.17 -0.17 0.032" rpy="${pi/2} 0.0 ${3*pi/4}"/>
+        <axis xyz="0.0 0.0 1.0"/>
+    </xacro:wheel_v0>
+
+    <!-- roller -->
+    <xacro:roller_v0 prefix="$(arg robot_name)_r1_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.0 -0.04 -0.0092" rpy="0.0 ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r2_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.02571 -0.03064 -0.0092" rpy="${2*pi/9} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r3_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.03939 -0.00695 -0.0092" rpy="${2*pi/4.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r4_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.03464 0.02 -0.0092" rpy="${2*pi/3} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r5_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.01368 0.03759 -0.0092" rpy="${2*pi/2.25} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r6_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.01368 0.03759 -0.0092" rpy="${2*pi/1.8} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r7_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.03464 0.02 -0.0092" rpy="${2*pi/1.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r8_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.03939 -0.00695 -0.0092" rpy="${2*pi/1.285714286} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r9_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.02571 -0.03064 -0.0092" rpy="${2*pi/1.125} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+
+    <xacro:roller_v0 prefix="$(arg robot_name)_r10_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.0 0.04 0.0092" rpy="0.0 ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r11_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.02571 0.03064 0.0092" rpy="${2*pi/9} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r12_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.03939 0.00695 0.0092" rpy="${2*pi/4.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r13_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.03464 -0.02 0.0092" rpy="${2*pi/3} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r14_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="0.01368 -0.03759 0.0092" rpy="${2*pi/2.25} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r15_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.01368 -0.03759 0.0092" rpy="${2*pi/1.8} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r16_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.03464 -0.02 0.0092" rpy="${2*pi/1.5} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r17_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.03939 0.00695 0.0092" rpy="${2*pi/1.285714286} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+    <xacro:roller_v0 prefix="$(arg robot_name)_r18_w4" parent="$(arg robot_name)_forth_wheel_link">
+        <origin xyz="-0.02571 0.03064 0.0092" rpy="${2*pi/1.125} ${pi/2} 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/> 
+    </xacro:roller_v0>
+
+    <!-- lidar -->
+    <joint name="lidar_joint" type="fixed">
+        <origin xyz="0.0 0.0 0.182" rpy="0.0 0.0 0.0"/>
+        <parent link="$(arg robot_name)_base_link"/>
+        <child link="$(arg robot_name)_lidar_link"/>
+    </joint>
+    <link name="$(arg robot_name)_lidar_link"></link>
+
+    <!-- gazebo -->
+    <!-- base robot -->
+    <xacro:base_gazebo_v0 robot_name="$(arg robot_name)"/>
+
+    <!-- camera -->
+    <xacro:camera_gazebo_v0 prefix="$(arg robot_name)"/>
+
+    <!-- wheels -->
+    <xacro:wheel_gazebo_v0 prefix="$(arg robot_name)_first"/>
+    <xacro:wheel_gazebo_v0 prefix="$(arg robot_name)_second"/>
+    <xacro:wheel_gazebo_v0 prefix="$(arg robot_name)_third"/>
+    <xacro:wheel_gazebo_v0 prefix="$(arg robot_name)_forth"/>
+
+    <!-- rollers -->
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r1_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r2_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r3_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r4_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r5_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r6_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r7_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r8_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r9_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r10_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r11_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r12_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r13_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r14_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r15_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r16_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r17_w1"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r18_w1"/>
+
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r1_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r2_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r3_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r4_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r5_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r6_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r7_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r8_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r9_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r10_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r11_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r12_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r13_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r14_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r15_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r16_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r17_w2"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r18_w2"/>
+
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r1_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r2_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r3_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r4_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r5_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r6_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r7_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r8_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r9_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r10_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r11_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r12_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r13_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r14_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r15_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r16_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r17_w3"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r18_w3"/>
+
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r1_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r2_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r3_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r4_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r5_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r6_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r7_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r8_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r9_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r10_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r11_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r12_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r13_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r14_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r15_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r16_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r17_w4"/>
+    <xacro:roller_gazebo_v0 prefix="$(arg robot_name)_r18_w4"/>
+
+    <!-- gazebo controllers -->
+    <xacro:robot_gazebo_systems robot_name="$(arg robot_name)"/>
+
+</robot>
