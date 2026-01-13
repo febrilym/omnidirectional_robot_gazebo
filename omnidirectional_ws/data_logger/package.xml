@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>data_logger</name>
+  <version>1.0.0</version>
+  <description>ROS package data logging for omnidirectional robot in Gazebo simulation</description>
+  
+  <maintainer email="febriprasetiyo90@gmail.com">febrilym</maintainer>
+  <license>BSD</license>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <!-- dependencies -->
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf</depend>
+  <depend>gazebo_msgs</depend>
+  <depend>rosbag</depend>
+  <depend>roslib</depend>
+  <depend>message_generation</depend>
+  <depend>message_runtime</depend>
+  
+  <export>
+  </export>
+</package>
