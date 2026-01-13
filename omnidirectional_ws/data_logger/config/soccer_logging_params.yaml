@@ -1,0 +1,18 @@
+# data logging configuration
+
+logging:
+  robot_name: "robot_1"
+  output_directory: "~/bratasena_ws/src/soccer_robot_logs"
+  sampling_rate: 20
+  
+  topics:
+    odometry: "/robot_1/odom"
+    joint_states: "/joint_states"
+    cmd_vel: "/robot_1/cmd_vel"
+    gazebo_states: "/gazebo/model_states"
+    
+  wheel_joints:
+    - "robot_1_first_wheel_joint"
+    - "robot_1_second_wheel_joint"
+    - "robot_1_third_wheel_joint"
+    - "robot_1_forth_wheel_joint"

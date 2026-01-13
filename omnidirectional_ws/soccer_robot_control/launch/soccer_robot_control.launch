@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="robot_name" default="robot_1"/>
+    
+    <rosparam file="$(find soccer_robot_control)/config/soccer_robot_control.yaml" command="load"/>
+    
+    <!-- spawn controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/$(arg robot_name)" args="
+            joint_state_controller
+            first_wheel_velocity_controller
+            second_wheel_velocity_controller  
+            third_wheel_velocity_controller
+            forth_wheel_velocity_controller
+        ">
+    </node>
+
+    <node name="omni_drive_controller" pkg="soccer_robot_control" type="omni_drive_controller.py" output="screen">
+        <param name="robot_name" type="string" value="$(arg robot_name)" />
+        <param name="wheel_radius" type="double" value="0.05" />
+        <param name="wheel_base" type="double" value="0.34" />
+    </node>
+</launch>
