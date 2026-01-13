@@ -1,9 +1,9 @@
 Robot Data Visualization Summary
 ==================================================
-Date: 2026-01-13 01:55:06
+Date: 2026-01-14 03:44:47
 Robot: robot_1
-Input file: odom_robot_1_20260113_014906.csv
-Data points: 768
+Input file: odom_robot_1_20260114_034148.csv
+Data points: 177
 
 Generated plots:
   - Basic analysis: robot_1_basic_analysis.png

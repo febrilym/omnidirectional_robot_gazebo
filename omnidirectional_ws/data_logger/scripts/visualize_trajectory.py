@@ -18,7 +18,7 @@ def load_data(csv_file):
         print(f"Successfully loaded {len(df)} rows")
         print(f"Columns: {list(df.columns)}")
         
-        # Show basic statistics
+        # show basic statistics
         if len(df) > 0:
             print(f"  Time range: {df.iloc[0,0]:.2f} to {df.iloc[-1,0]:.2f} seconds")
         
@@ -29,6 +29,9 @@ def load_data(csv_file):
 
 def plot_trajectory(df, output_dir, robot_name):
     print("Creating trajectory plot...")
+    
+    # conversion
+    conversion_func = 100.0
     
     # find position columns
     x_col = None
@@ -51,13 +54,15 @@ def plot_trajectory(df, output_dir, robot_name):
     
     # 2D trajectory
     ax = axes[0, 0]
-    ax.plot(df[x_col], df[y_col], 'b-', alpha=0.6, linewidth=1.5)
-    ax.scatter(df[x_col].iloc[0], df[y_col].iloc[0], 
+    x_conversion = df[x_col] * conversion_func
+    y_conversion = df[y_col] * conversion_func
+    ax.plot(x_conversion, y_conversion, 'b-', alpha=0.6, linewidth=1.5)
+    ax.scatter(x_conversion.iloc[0], y_conversion.iloc[0], 
                color='green', s=100, marker='o', label='Start', zorder=5)
-    ax.scatter(df[x_col].iloc[-1], df[y_col].iloc[-1], 
+    ax.scatter(x_conversion.iloc[-1], y_conversion.iloc[-1], 
                color='red', s=100, marker='s', label='End', zorder=5)
-    ax.set_xlabel('X Position (m)')
-    ax.set_ylabel('Y Position (m)')
+    ax.set_xlabel('X Position')
+    ax.set_ylabel('Y Position')
     ax.set_title('2D Trajectory')
     ax.grid(True, alpha=0.3)
     ax.legend()
@@ -65,14 +70,13 @@ def plot_trajectory(df, output_dir, robot_name):
     
     # position vs time
     ax = axes[0, 1]
-    # 'timestamp' to 'time', otherwise use index
     if df.columns[0] == 'timestamp' or 'time' in df.columns[0].lower():
         time = df.iloc[:, 0] - df.iloc[0, 0]
     else:
         time = np.arange(len(df)) / 20.0
     
-    ax.plot(time, df[x_col], 'r-', label='X', linewidth=1.5)
-    ax.plot(time, df[y_col], 'g-', label='Y', linewidth=1.5)
+    ax.plot(time, x_conversion, 'r-', label='X', linewidth=1.5)
+    ax.plot(time, y_conversion, 'g-', label='Y', linewidth=1.5)
     
     # z position
     z_col = None
@@ -82,10 +86,11 @@ def plot_trajectory(df, output_dir, robot_name):
             break
     
     if z_col and z_col in df.columns:
-        ax.plot(time, df[z_col], 'b-', label='Z', linewidth=1.5)
+        z_conversion = df[z_col] * conversion_func
+        ax.plot(time, z_conversion, 'b-', label='Z', linewidth=1.5)
     
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Position (m)')
+    ax.set_ylabel('Position')
     ax.set_title('Position vs Time')
     ax.grid(True, alpha=0.3)
     ax.legend()
@@ -103,7 +108,8 @@ def plot_trajectory(df, output_dir, robot_name):
             break
     
     if vx_col and vx_col in df.columns:
-        ax.plot(time, df[vx_col], 'r-', label='Vx', linewidth=1.5)
+        vx_conversion = df[vx_col] * conversion_func
+        ax.plot(time, vx_conversion, 'r-', label='Vx', linewidth=1.5)
         velocity_plotted = True
     
     # look for vy
@@ -115,23 +121,24 @@ def plot_trajectory(df, output_dir, robot_name):
             break
     
     if vy_col and vy_col in df.columns:
-        ax.plot(time, df[vy_col], 'g-', label='Vy', linewidth=1.5)
+        vy_conversion = df[vy_col] * conversion_func
+        ax.plot(time, vy_conversion, 'g-', label='Vy', linewidth=1.5)
         velocity_plotted = True
     
     if not velocity_plotted:
         # try to calculate velocity from position
         if len(df) > 1:
             dt = np.diff(time)
-            vx = np.diff(df[x_col]) / dt
-            vy = np.diff(df[y_col]) / dt
+            vx_calc = np.diff(x_conversion) / dt
+            vy_calc = np.diff(y_conversion) / dt
             
-            ax.plot(time[1:], vx, 'r-', label='Vx (calc)', linewidth=1.5, alpha=0.7)
-            ax.plot(time[1:], vy, 'g-', label='Vy (calc)', linewidth=1.5, alpha=0.7)
+            ax.plot(time[1:], vx_calc, 'r-', label='Vx (calc)', linewidth=1.5, alpha=0.7)
+            ax.plot(time[1:], vy_calc, 'g-', label='Vy (calc)', linewidth=1.5, alpha=0.7)
             velocity_plotted = True
     
     if velocity_plotted:
         ax.set_xlabel('Time (s)')
-        ax.set_ylabel('Velocity (m/s)')
+        ax.set_ylabel('Velocity')
         ax.set_title('Linear Velocity')
         ax.grid(True, alpha=0.3)
         ax.legend()
@@ -150,16 +157,16 @@ def plot_trajectory(df, output_dir, robot_name):
     
     # distance calculation
     if len(df) > 1:
-        dx = np.diff(df[x_col])
-        dy = np.diff(df[y_col])
+        dx = np.diff(x_conversion)
+        dy = np.diff(y_conversion)
         distances = np.sqrt(dx**2 + dy**2)
         total_distance = np.sum(distances)
-        stats_text.append(f"Total distance: {total_distance:.2f} m")
+        stats_text.append(f"Total distance: {total_distance:.2f}")
         
         # displacement
-        displacement = np.sqrt((df[x_col].iloc[-1] - df[x_col].iloc[0])**2 + 
-                              (df[y_col].iloc[-1] - df[y_col].iloc[0])**2)
-        stats_text.append(f"Displacement: {displacement:.2f} m")
+        displacement = np.sqrt((x_conversion.iloc[-1] - x_conversion.iloc[0])**2 + 
+                              (y_conversion.iloc[-1] - y_conversion.iloc[0])**2)
+        stats_text.append(f"Displacement: {displacement:.2f}")
         
         # efficiency
         if total_distance > 0:
@@ -174,13 +181,13 @@ def plot_trajectory(df, output_dir, robot_name):
     # average speed
     if 'duration' in locals() and duration > 0 and 'total_distance' in locals():
         avg_speed = total_distance / duration
-        stats_text.append(f"Average speed: {avg_speed:.2f} m/s")
+        stats_text.append(f"Average speed: {avg_speed:.2f}")
     
     # bounding box
-    x_min, x_max = df[x_col].min(), df[x_col].max()
-    y_min, y_max = df[y_col].min(), df[y_col].max()
-    stats_text.append(f"X range: {x_min:.2f} to {x_max:.2f} m")
-    stats_text.append(f"Y range: {y_min:.2f} to {y_max:.2f} m")
+    x_min, x_max = x_conversion.min(), x_conversion.max()
+    y_min, y_max = y_conversion.min(), y_conversion.max()
+    stats_text.append(f"X range: {x_min:.2f} to {x_max:.2f}")
+    stats_text.append(f"Y range: {y_min:.2f} to {y_max:.2f}")
     
     # display statistics
     stats_text = "\n".join(stats_text)
@@ -226,7 +233,7 @@ def plot_wheel_data(df, output_dir, robot_name):
     vel_cols = [c for c in wheel_cols if 'vel' in c.lower()]
     pos_cols = [c for c in wheel_cols if 'pos' in c.lower() and 'vel' not in c.lower()]
     
-    # wheel velocities
+    # wheel velocities (tetap rad/s)
     ax = axes[0, 0]
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'brown']
     
@@ -246,7 +253,7 @@ def plot_wheel_data(df, output_dir, robot_name):
                 ha='center', va='center', transform=ax.transAxes)
         ax.set_title('Wheel Velocities')
     
-    # wheel positions
+    # wheel positions (tetap radian)
     ax = axes[0, 1]
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'brown']
     
@@ -344,6 +351,9 @@ def plot_wheel_data(df, output_dir, robot_name):
 def plot_3d_trajectory(df, output_dir, robot_name):
     print("Creating 3D trajectory plot...")
     
+    # conversion
+    conversion_func = 100.0
+    
     # find position columns
     x_col = y_col = z_col = None
     
@@ -365,30 +375,33 @@ def plot_3d_trajectory(df, output_dir, robot_name):
     ax = fig.add_subplot(111, projection='3d')
     
     # plot trajectory
-    ax.plot(df[x_col], df[y_col], df[z_col], 'b-', alpha=0.6, linewidth=1.5)
+    x_conversion = df[x_col] * conversion_func
+    y_conversion = df[y_col] * conversion_func
+    z_conversion = df[z_col] * conversion_func
+    ax.plot(x_conversion, y_conversion, z_conversion, 'b-', alpha=0.6, linewidth=1.5)
     
     # start and end points
-    ax.scatter(df[x_col].iloc[0], df[y_col].iloc[0], df[z_col].iloc[0], 
+    ax.scatter(x_conversion.iloc[0], y_conversion.iloc[0], z_conversion.iloc[0], 
                color='green', s=100, marker='o', label='Start')
-    ax.scatter(df[x_col].iloc[-1], df[y_col].iloc[-1], df[z_col].iloc[-1], 
+    ax.scatter(x_conversion.iloc[-1], y_conversion.iloc[-1], z_conversion.iloc[-1], 
                color='red', s=100, marker='s', label='End')
     
     # labels
-    ax.set_xlabel('X Position (m)')
-    ax.set_ylabel('Y Position (m)')
-    ax.set_zlabel('Z Position (m)')
+    ax.set_xlabel('X Position')
+    ax.set_ylabel('Y Position')
+    ax.set_zlabel('Z Position')
     ax.set_title(f'3D Trajectory - {robot_name}')
     ax.legend()
     ax.grid(True, alpha=0.3)
     
     # set equal aspect ratio
-    max_range = np.array([df[x_col].max()-df[x_col].min(), 
-                          df[y_col].max()-df[y_col].min(), 
-                          df[z_col].max()-df[z_col].min()]).max() / 2.0
+    max_range = np.array([x_conversion.max()-x_conversion.min(), 
+                          y_conversion.max()-y_conversion.min(), 
+                          z_conversion.max()-z_conversion.min()]).max() / 2.0
     
-    mid_x = (df[x_col].max()+df[x_col].min()) * 0.5
-    mid_y = (df[y_col].max()+df[y_col].min()) * 0.5
-    mid_z = (df[z_col].max()+df[z_col].min()) * 0.5
+    mid_x = (x_conversion.max()+x_conversion.min()) * 0.5
+    mid_y = (y_conversion.max()+y_conversion.min()) * 0.5
+    mid_z = (z_conversion.max()+z_conversion.min()) * 0.5
     
     ax.set_xlim(mid_x - max_range, mid_x + max_range)
     ax.set_ylim(mid_y - max_range, mid_y + max_range)
@@ -455,7 +468,7 @@ Examples:
     # wheel data analysis
     wheel_plot = plot_wheel_data(df, args.output_dir, args.robot_name)
     
-    # 3D trajectory (if Z data exists)
+    # 3D trajectory
     plot_3d = plot_3d_trajectory(df, args.output_dir, args.robot_name)
     
     print("\n" + "=" * 60)
