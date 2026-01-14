@@ -103,19 +103,19 @@ class SoccerRobotLogger:
             writer.writerow([
                 msg.header.stamp.to_sec(),
                 self.robot_name,
-                msg.pose.pose.position.x,
-                msg.pose.pose.position.y,
-                msg.pose.pose.position.z,
-                msg.pose.pose.orientation.x,
-                msg.pose.pose.orientation.y,
-                msg.pose.pose.orientation.z,
-                msg.pose.pose.orientation.w,
-                msg.twist.twist.linear.x,
-                msg.twist.twist.linear.y,
-                msg.twist.twist.linear.z,
-                msg.twist.twist.angular.x,
-                msg.twist.twist.angular.y,
-                msg.twist.twist.angular.z
+                msg.pose.pose.position.x * 100,
+                msg.pose.pose.position.y * 100,
+                msg.pose.pose.position.z * 100,
+                msg.pose.pose.orientation.x * 100,
+                msg.pose.pose.orientation.y * 100,
+                msg.pose.pose.orientation.z * 100,
+                msg.pose.pose.orientation.w * 100,
+                msg.twist.twist.linear.x * 100,
+                msg.twist.twist.linear.y * 100,
+                msg.twist.twist.linear.z * 100,
+                msg.twist.twist.angular.x * 100,
+                msg.twist.twist.angular.y * 100,
+                msg.twist.twist.angular.z * 100
             ])
         
         # log every 100 data
