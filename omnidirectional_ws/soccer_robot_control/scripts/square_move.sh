@@ -4,170 +4,183 @@ echo "========================================"
 echo "Robot Coordinate Movement Controller Start!"
 echo "========================================"
 
-# Konfigurasi kecepatan (m/s)
+# ================= CONFIG =================
+SCALE_FACTOR=100.0
+CORRECTION_FACTOR=12.84
 MAX_VELOCITY=2.8
 ANGULAR_VEL=2.8
-PAUSE_DURATION=0.5
 
-# Global position (estimasi)
+ROT_PUB_RATE=30
+ROTATION_GAIN=14.0  # <<< FIX UTAMA (tuning yaw)
+PAUSE_DURATION=2
+
+# ================= STATE =================
 CURRENT_X=0.0
 CURRENT_Y=0.0
+CURRENT_ANGLE_DEG=0.0   # estimasi saja (open-loop)
+
+PI=3.141592653589793
+
+# ================= SCALE =================
+scale_from_log_with_correction() {
+    echo "scale=6; ($1 / $SCALE_FACTOR) * $CORRECTION_FACTOR" | bc -l
+}
+
+scale_to_log_with_correction() {
+    echo "scale=6; ($1 / $CORRECTION_FACTOR) * $SCALE_FACTOR" | bc -l
+}
+
+# ================= LOW LEVEL =================
+stop_robot() {
+    rostopic pub -1 /robot_1/cmd_vel geometry_msgs/Twist "linear:
+  x: 0.0
+  y: 0.0
+  z: 0.0
+angular:
+  x: 0.0
+  y: 0.0
+  z: 0.0" > /dev/null
+    sleep 0.2
+}
 
 send_velocity() {
-    local linear_x=$1
-    local linear_y=$2
-    local angular_z=$3
+    local vx=$1
+    local vy=$2
+    local wz=$3
     local duration=$4
-    
-    echo "Send: linear.x=$linear_x, linear.y=$linear_y, angular.z=$angular_z"
-    rostopic pub -1 /robot_1/cmd_vel geometry_msgs/Twist "linear:
-  x: $linear_x
-  y: $linear_y
+
+    echo "Send cmd_vel: vx=$vx vy=$vy wz=$wz  time=$duration"
+
+    rostopic pub -r 30 /robot_1/cmd_vel geometry_msgs/Twist "linear:
+  x: $vx
+  y: $vy
   z: 0.0
 angular:
   x: 0.0
   y: 0.0
-  z: $angular_z" &
-    
-    local PUB_PID=$!
+  z: $wz" &
+    local PID=$!
+
     sleep $duration
-    kill $PUB_PID 2>/dev/null
-    wait $PUB_PID 2>/dev/null
-    
-    # Update estimated position (open-loop)
-    CURRENT_X=$(echo "$CURRENT_X + $linear_x * $duration" | bc -l)
-    CURRENT_Y=$(echo "$CURRENT_Y + $linear_y * $duration" | bc -l)
+    kill $PID 2>/dev/null
+    wait $PID 2>/dev/null
 }
 
-stop_robot() {
-    echo "Menghentikan robot..."
-    rostopic pub -1 /robot_1/cmd_vel geometry_msgs/Twist "linear:
+# ================= ROTATION =================
+rotate_relative() {
+    local delta_deg=$1
+
+    echo "========================================"
+    echo "Rotate relative: $delta_deg° (RIGHT = +)"
+    echo "========================================"
+
+    # === BALIK DEFINISI USER ===
+    # +deg = kanan (CW) → angular.z NEGATIF
+    local delta_rad=$(echo "-1 * $delta_deg * $PI / 180" | bc -l)
+
+    local wz=$ANGULAR_VEL
+    if [ $(echo "$delta_rad < 0" | bc) -eq 1 ]; then
+        wz=$(echo "-1 * $ANGULAR_VEL" | bc -l)
+    fi
+
+    local duration=$(echo "sqrt($delta_rad^2) * $ROTATION_GAIN / $ANGULAR_VEL" | bc -l)
+
+    echo "ω_cmd : $wz rad/s"
+    echo "time  : $duration s"
+
+    rostopic pub -r $ROT_PUB_RATE /robot_1/cmd_vel geometry_msgs/Twist "linear:
   x: 0.0
   y: 0.0
   z: 0.0
 angular:
   x: 0.0
   y: 0.0
-  z: 0.0"
-    sleep 0.5
+  z: $wz" &
+    local PID=$!
+
+    sleep $duration
+    kill $PID
+    wait $PID 2>/dev/null
+
+    stop_robot
+
+    # === UPDATE ESTIMASI YAW (KANAN = +) ===
+    CURRENT_ANGLE_DEG=$(echo "$CURRENT_ANGLE_DEG + $delta_deg" | bc -l)
+    CURRENT_ANGLE_DEG=$(echo "$CURRENT_ANGLE_DEG % 360" | bc -l)
+    if [ $(echo "$CURRENT_ANGLE_DEG < 0" | bc) -eq 1 ]; then
+        CURRENT_ANGLE_DEG=$(echo "$CURRENT_ANGLE_DEG + 360" | bc -l)
+    fi
+
+    echo "Estimated yaw: $CURRENT_ANGLE_DEG°"
 }
 
-move_to_coordinate() {
-    local target_x=$1
-    local target_y=$2
-    local use_diagonal=${3:-false}
-    
+# ================= TRANSLATION =================
+move_forward() {
+    local distance_log=$1
+    local distance=$(scale_from_log_with_correction $distance_log)
+    local duration=$(echo "$distance / $MAX_VELOCITY" | bc -l)
+
     echo "========================================"
-    echo "Moving to coordinate: X=$target_x, Y=$target_y"
-    echo "Current position: X=$CURRENT_X, Y=$CURRENT_Y"
-    
-    # Hitung jarak dan arah
-    local dx=$(echo "$target_x - $CURRENT_X" | bc -l)
-    local dy=$(echo "$target_y - $CURRENT_Y" | bc -l)
-    local distance=$(echo "sqrt($dx^2 + $dy^2)" | bc -l)
-    
-    if [ $(echo "$distance < 0.001" | bc) -eq 1 ]; then
-        echo "Already at target position"
-        return
-    fi
-    
-    # Mode pergerakan
-    if [ "$use_diagonal" = true ]; then
-        # Gerakan diagonal langsung
-        local angle=$(echo "a($dy/$dx)" | bc -l)  # arctan(dy/dx)
-        
-        # Tentukan kuadran
-        if [ $(echo "$dx < 0" | bc) -eq 1 ]; then
-            angle=$(echo "$angle + 3.14159" | bc -l)
-        fi
-        
-        # Hitung komponen kecepatan
-        local velocity_x=$(echo "$MAX_VELOCITY * c($angle)" | bc -l)
-        local velocity_y=$(echo "$MAX_VELOCITY * s($angle)" | bc -l)
-        local duration=$(echo "$distance / $MAX_VELOCITY" | bc -l)
-        
-        echo "Moving diagonally: Vx=$velocity_x, Vy=$velocity_y, Time=$duration s"
-        send_velocity $velocity_x $velocity_y 0.0 $duration
-        
-    else
-        # Gerakan sumbu terpisah (X lalu Y)
-        if [ $(echo "$dx != 0" | bc) -eq 1 ]; then
-            local duration_x=$(echo "sqrt($dx^2) / $MAX_VELOCITY" | bc -l)
-            local velocity_x=$(echo "$dx / sqrt($dx^2) * $MAX_VELOCITY" | bc -l)
-            echo "Moving in X: Vx=$velocity_x, Time=$duration_x s"
-            send_velocity $velocity_x 0.0 0.0 $duration_x
-            stop_robot
-            sleep $PAUSE_DURATION
-        fi
-        
-        if [ $(echo "$dy != 0" | bc) -eq 1 ]; then
-            local duration_y=$(echo "sqrt($dy^2) / $MAX_VELOCITY" | bc -l)
-            local velocity_y=$(echo "$dy / sqrt($dy^2) * $MAX_VELOCITY" | bc -l)
-            echo "Moving in Y: Vy=$velocity_y, Time=$duration_y s"
-            send_velocity 0.0 $velocity_y 0.0 $duration_y
-        fi
-    fi
-    
+    echo "Move Forward"
+    echo "Distance : $distance m"
+    echo "Duration : $duration s"
+    echo "========================================"
+
+    send_velocity $MAX_VELOCITY 0.0 0.0 $duration
     stop_robot
-    CURRENT_X=$target_x
-    CURRENT_Y=$target_y
-    echo "Arrived at: X=$CURRENT_X, Y=$CURRENT_Y"
+
+    CURRENT_X=$(echo "$CURRENT_X + $distance * c($CURRENT_ANGLE_DEG*$PI/180)" | bc -l)
+    CURRENT_Y=$(echo "$CURRENT_Y + $distance * s($CURRENT_ANGLE_DEG*$PI/180)" | bc -l)
+
+    echo "Pos est: X=$CURRENT_X Y=$CURRENT_Y"
 }
 
-rotate_to_angle() {
-    local target_angle_deg=$1  # dalam derajat
-    local current_angle_deg=0  # asumsi awal menghadap sumbu X positif
-    
-    local angle_diff=$(echo "$target_angle_deg - $current_angle_deg" | bc -l)
-    local angle_diff_rad=$(echo "$angle_diff * 3.14159 / 180" | bc -l)
-    
-    # Tentukan arah putaran
-    local angular_vel=$ANGULAR_VEL
-    if [ $(echo "$angle_diff_rad < 0" | bc) -eq 1 ]; then
-        angular_vel=$(echo "-1 * $ANGULAR_VEL" | bc -l)
-        angle_diff_rad=$(echo "-1 * $angle_diff_rad" | bc -l)
-    fi
-    
-    local duration=$(echo "$angle_diff_rad / $ANGULAR_VEL" | bc -l)
-    
-    echo "Rotating to $target_angle_deg degrees: ω=$angular_vel, Time=$duration s"
-    send_velocity 0.0 0.0 $angular_vel $duration
-    stop_robot
+# ================= PATTERN =================
+move_square_with_yaw() {
+    local side_log=$1
+
+    echo "========================================"
+    echo "SQUARE (FORWARD + YAW)"
+    echo "Side (log): $side_log"
+    echo "========================================"
+
+    for i in 1 2 3 4; do
+        echo ""
+        echo "--- Side $i ---"
+        move_forward $side_log
+        sleep $PAUSE_DURATION
+
+        echo "--- Yaw 90 deg ---"
+        rotate_relative 90
+        sleep $PAUSE_DURATION
+    done
 }
 
+# ================= START =================
 countdown() {
-    local seconds=$1
-    echo -n "Start in: "
-    for ((i=seconds; i>0; i--)); do
+    for ((i=$1;i>0;i--)); do
         echo -n "$i "
         sleep 1
     done
     echo "GO!"
 }
 
-# Contoh penggunaan
 countdown 3
 
 echo ""
-echo "Starting coordinate-based movement..."
+echo "Starting movement..."
 echo ""
 
-# Contoh 1: Gerakan diagonal ke (10, 10)
-move_to_coordinate 10 0 true
-
-# # Tunggu sebentar
-# sleep 2
-
-# # Contoh 2: Gerakan ke (-5, 5) dengan sumbu terpisah
-# move_to_coordinate -5 5 false
-
-# Contoh 3: Rotasi 90 derajat
-# rotate_to_angle 90
-
-# # Contoh 4: Gerakan diagonal ke (0, 0)
-# move_to_coordinate 0 0 true
+move_square_with_yaw 300
+# rotate_relative 90
 
 echo ""
 echo "========================================"
 echo "Robot Coordinate Movement Completed!"
 echo "========================================"
+echo ""
+echo "FINAL ESTIMATION:"
+echo "X=$CURRENT_X  Y=$CURRENT_Y  Yaw=$CURRENT_ANGLE_DEG°"
+echo ""
+echo "ROTATION_GAIN = $ROTATION_GAIN"
+echo "Tune this if yaw not exactly 90°"

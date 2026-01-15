@@ -56,8 +56,8 @@ def plot_trajectory(df, output_dir, robot_name):
                color='green', s=100, marker='o', label='Start', zorder=5)
     ax.scatter(df[x_col].iloc[-1], df[y_col].iloc[-1], 
                color='red', s=100, marker='s', label='End', zorder=5)
-    ax.set_xlabel('X Position (m)')
-    ax.set_ylabel('Y Position (m)')
+    ax.set_xlabel('X Position')
+    ax.set_ylabel('Y Position')
     ax.set_title('2D Trajectory')
     ax.grid(True, alpha=0.3)
     ax.legend()
@@ -85,7 +85,7 @@ def plot_trajectory(df, output_dir, robot_name):
         ax.plot(time, df[z_col], 'b-', label='Z', linewidth=1.5)
     
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Position (m)')
+    ax.set_ylabel('Position')
     ax.set_title('Position vs Time')
     ax.grid(True, alpha=0.3)
     ax.legend()
@@ -131,7 +131,7 @@ def plot_trajectory(df, output_dir, robot_name):
     
     if velocity_plotted:
         ax.set_xlabel('Time (s)')
-        ax.set_ylabel('Velocity (m/s)')
+        ax.set_ylabel('Velocity')
         ax.set_title('Linear Velocity')
         ax.grid(True, alpha=0.3)
         ax.legend()
@@ -154,12 +154,12 @@ def plot_trajectory(df, output_dir, robot_name):
         dy = np.diff(df[y_col])
         distances = np.sqrt(dx**2 + dy**2)
         total_distance = np.sum(distances)
-        stats_text.append(f"Total distance: {total_distance:.2f} m")
+        stats_text.append(f"Total distance: {total_distance:.2f}")
         
         # displacement
         displacement = np.sqrt((df[x_col].iloc[-1] - df[x_col].iloc[0])**2 + 
                               (df[y_col].iloc[-1] - df[y_col].iloc[0])**2)
-        stats_text.append(f"Displacement: {displacement:.2f} m")
+        stats_text.append(f"Displacement: {displacement:.2f}")
         
         # efficiency
         if total_distance > 0:
@@ -174,13 +174,13 @@ def plot_trajectory(df, output_dir, robot_name):
     # average speed
     if 'duration' in locals() and duration > 0 and 'total_distance' in locals():
         avg_speed = total_distance / duration
-        stats_text.append(f"Average speed: {avg_speed:.2f} m/s")
+        stats_text.append(f"Average speed: {avg_speed:.2f}")
     
     # bounding box
     x_min, x_max = df[x_col].min(), df[x_col].max()
     y_min, y_max = df[y_col].min(), df[y_col].max()
-    stats_text.append(f"X range: {x_min:.2f} to {x_max:.2f} m")
-    stats_text.append(f"Y range: {y_min:.2f} to {y_max:.2f} m")
+    stats_text.append(f"X range: {x_min:.2f} to {x_max:.2f}")
+    stats_text.append(f"Y range: {y_min:.2f} to {y_max:.2f}")
     
     # display statistics
     stats_text = "\n".join(stats_text)
@@ -374,9 +374,9 @@ def plot_3d_trajectory(df, output_dir, robot_name):
                color='red', s=100, marker='s', label='End')
     
     # labels
-    ax.set_xlabel('X Position (m)')
-    ax.set_ylabel('Y Position (m)')
-    ax.set_zlabel('Z Position (m)')
+    ax.set_xlabel('X Position')
+    ax.set_ylabel('Y Position')
+    ax.set_zlabel('Z Position')
     ax.set_title(f'3D Trajectory - {robot_name}')
     ax.legend()
     ax.grid(True, alpha=0.3)

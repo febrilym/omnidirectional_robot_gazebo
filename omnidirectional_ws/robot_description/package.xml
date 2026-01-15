@@ -39,7 +39,7 @@
   <exec_depend>gazebo_ros_pkgs</exec_depend>
 
   <export>
-    <!-- Other tools can request additional information be placed here -->
+    <!-- still don't need it:) -->
 
   </export>
 </package>
