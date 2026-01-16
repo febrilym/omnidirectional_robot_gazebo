@@ -6,13 +6,13 @@ echo "========================================"
 
 # ================= CONFIG =================
 SCALE_FACTOR=100.0
-CORRECTION_FACTOR=12.84
+CORRECTION_FACTOR=15.5
 MAX_VELOCITY=2.8
 ANGULAR_VEL=2.8
 
-ROT_PUB_RATE=30
-ROTATION_GAIN=14.0  # <<< FIX UTAMA (tuning yaw)
-PAUSE_DURATION=2
+ROT_PUB_RATE=144
+ROTATION_GAIN=14.8  # <<< FIX UTAMA (tuning yaw)
+PAUSE_DURATION=5
 
 # ================= STATE =================
 CURRENT_X=0.0
@@ -51,7 +51,7 @@ send_velocity() {
 
     echo "Send cmd_vel: vx=$vx vy=$vy wz=$wz  time=$duration"
 
-    rostopic pub -r 30 /robot_1/cmd_vel geometry_msgs/Twist "linear:
+    rostopic pub -r 144 /robot_1/cmd_vel geometry_msgs/Twist "linear:
   x: $vx
   y: $vy
   z: 0.0
@@ -64,6 +64,73 @@ angular:
     sleep $duration
     kill $PID 2>/dev/null
     wait $PID 2>/dev/null
+}
+
+# ================= GERAKAN SAMPING (LATERAL) =================
+
+move_right() {
+    local distance_log=$1
+    local distance=$(scale_from_log_with_correction $distance_log)
+    local duration=$(echo "$distance / $MAX_VELOCITY" | bc -l)
+
+    echo "========================================"
+    echo "Move Right (Lateral)"
+    echo "Distance : $distance m"
+    echo "Duration : $duration s"
+    echo "========================================"
+
+    # REVISI: vy negatif untuk gerak ke KANAN
+    send_velocity 0.0 -$MAX_VELOCITY 0.0 $duration
+    stop_robot
+
+    # Update posisi (bergerak ke kanan = positif Y) - tetap sama
+    CURRENT_Y=$(echo "$CURRENT_Y + $distance" | bc -l)
+
+    echo "Pos est: X=$CURRENT_X Y=$CURRENT_Y"
+}
+
+# Gerakan ke kiri (negative Y direction) - DIREVISI
+move_left() {
+    local distance_log=$1
+    local distance=$(scale_from_log_with_correction $distance_log)
+    local duration=$(echo "$distance / $MAX_VELOCITY" | bc -l)
+
+    echo "========================================"
+    echo "Move Left (Lateral)"
+    echo "Distance : $distance m"
+    echo "Duration : $duration s"
+    echo "========================================"
+
+    # REVISI: vy positif untuk gerak ke KIRI
+    send_velocity 0.0 $MAX_VELOCITY 0.0 $duration
+    stop_robot
+
+    # Update posisi (bergerak ke kiri = negatif Y) - tetap sama
+    CURRENT_Y=$(echo "$CURRENT_Y - $distance" | bc -l)
+
+    echo "Pos est: X=$CURRENT_X Y=$CURRENT_Y"
+}
+
+# Gerakan mundur (negative X direction)
+move_backward() {
+    local distance_log=$1
+    local distance=$(scale_from_log_with_correction $distance_log)
+    local duration=$(echo "$distance / $MAX_VELOCITY" | bc -l)
+
+    echo "========================================"
+    echo "Move Backward"
+    echo "Distance : $distance m"
+    echo "Duration : $duration s"
+    echo "========================================"
+
+    # Bergerak mundur (negative X axis)
+    send_velocity -$MAX_VELOCITY 0.0 0.0 $duration
+    stop_robot
+
+    # Update posisi (mundur = negatif X)
+    CURRENT_X=$(echo "$CURRENT_X - $distance" | bc -l)
+
+    echo "Pos est: X=$CURRENT_X Y=$CURRENT_Y"
 }
 
 # ================= ROTATION =================
@@ -135,6 +202,121 @@ move_forward() {
     echo "Pos est: X=$CURRENT_X Y=$CURRENT_Y"
 }
 
+# ================= POLA-POLA GERAKAN =================
+
+# Square pattern using forward and right movements
+move_square_lateral() {
+    local side_log=$1
+
+    echo "========================================"
+    echo "SQUARE PATTERN (Forward + Right)"
+    echo "Side (log): $side_log"
+    echo "========================================"
+
+    move_forward $side_log
+    sleep $PAUSE_DURATION
+
+    move_right $side_log
+    sleep $PAUSE_DURATION
+
+    move_backward $side_log
+    sleep $PAUSE_DURATION
+
+    move_left $side_log
+    sleep $PAUSE_DURATION
+}
+
+# Cross pattern (plus sign)
+move_cross_pattern() {
+    local arm_log=$1
+
+    echo "========================================"
+    echo "CROSS PATTERN"
+    echo "Arm length (log): $arm_log"
+    echo "========================================"
+
+    move_forward $arm_log
+    sleep $PAUSE_DURATION
+    
+    move_backward $(echo "$arm_log * 2" | bc -l)
+    sleep $PAUSE_DURATION
+    
+    move_forward $arm_log  # Kembali ke tengah
+    sleep $PAUSE_DURATION
+    
+    move_right $arm_log
+    sleep $PAUSE_DURATION
+    
+    move_left $(echo "$arm_log * 2" | bc -l)
+    sleep $PAUSE_DURATION
+    
+    move_right $arm_log  # Kembali ke tengah
+    sleep $PAUSE_DURATION
+}
+
+# Rectangle pattern (panjang dan lebar berbeda)
+move_rectangle() {
+    local length_log=$1
+    local width_log=$2
+
+    echo "========================================"
+    echo "RECTANGLE PATTERN"
+    echo "Length (log): $length_log, Width (log): $width_log"
+    echo "========================================"
+
+    move_forward $length_log
+    sleep $PAUSE_DURATION
+
+    move_right $width_log
+    sleep $PAUSE_DURATION
+
+    move_backward $length_log
+    sleep $PAUSE_DURATION
+
+    move_left $width_log
+    sleep $PAUSE_DURATION
+}
+
+# Diamond pattern
+move_diamond() {
+    local diagonal_log=$1
+
+    echo "========================================"
+    echo "DIAMOND PATTERN"
+    echo "Diagonal (log): $diagonal_log"
+    echo "========================================"
+
+    local side_log=$(echo "$diagonal_log * 0.7071" | bc -l)  # diagonal/sqrt(2)
+    
+    # Sudut 45 derajat
+    rotate_relative 45
+    sleep $PAUSE_DURATION
+    
+    move_forward $side_log
+    sleep $PAUSE_DURATION
+    
+    rotate_relative 90
+    sleep $PAUSE_DURATION
+    
+    move_forward $side_log
+    sleep $PAUSE_DURATION
+    
+    rotate_relative 90
+    sleep $PAUSE_DURATION
+    
+    move_forward $side_log
+    sleep $PAUSE_DURATION
+    
+    rotate_relative 90
+    sleep $PAUSE_DURATION
+    
+    move_forward $side_log
+    sleep $PAUSE_DURATION
+    
+    # Kembali ke orientasi awal
+    rotate_relative 45
+}
+
 # ================= PATTERN =================
 move_square_with_yaw() {
     local side_log=$1
@@ -144,16 +326,26 @@ move_square_with_yaw() {
     echo "Side (log): $side_log"
     echo "========================================"
 
-    for i in 1 2 3 4; do
-        echo ""
-        echo "--- Side $i ---"
-        move_forward $side_log
-        sleep $PAUSE_DURATION
+    move_forward $side_log
+    sleep $PAUSE_DURATION
 
-        echo "--- Yaw 90 deg ---"
-        rotate_relative 90
-        sleep $PAUSE_DURATION
-    done
+    rotate_relative 90
+    sleep $PAUSE_DURATION
+
+    move_forward $side_log
+    sleep $PAUSE_DURATION
+
+    rotate_relative 90
+    sleep $PAUSE_DURATION
+
+    move_forward $side_log
+    sleep $PAUSE_DURATION
+
+    rotate_relative 90
+    sleep $PAUSE_DURATION
+
+    move_forward $side_log
+    sleep $PAUSE_DURATION
 }
 
 # ================= START =================
@@ -165,13 +357,72 @@ countdown() {
     echo "GO!"
 }
 
+# ================= DEMO GERAKAN =================
+demo_lateral_movements() {
+    echo ""
+    echo "========================================"
+    echo "DEMO LATERAL MOVEMENTS"
+    echo "========================================"
+    
+    echo "1. Moving right 100"
+    move_right 100
+    sleep 2
+    
+    echo ""
+    echo "2. Moving left 100"
+    move_left 100
+    sleep 2
+    
+    echo ""
+    echo "3. Moving forward 100"
+    move_forward 100
+    sleep 2
+    
+    echo ""
+    echo "4. Moving backward 100"
+    move_backward 100
+    sleep 2
+}
+
+# ================= MAIN PROGRAM =================
 countdown 3
 
 echo ""
 echo "Starting movement..."
 echo ""
 
-move_square_with_yaw 300
+move_forward 212
+sleep 5
+move_right 127
+sleep 5
+move_forward 175
+# rotate_relative 90
+
+# move_forward 400
+
+# Pilih salah satu pola untuk dijalankan:
+
+# 1. Square dengan rotasi (sebelumnya)
+# move_square_with_yaw 300
+
+# 2. Square dengan gerakan lateral (tanpa rotasi)
+# move_square_lateral 300
+
+# 3. Demo gerakan lateral
+# demo_lateral_movements
+
+# 4. Cross pattern
+# move_cross_pattern 200
+
+# 5. Rectangle pattern
+# move_rectangle 400 200
+
+# 6. Diamond pattern
+# move_diamond 300
+
+# 7. Single movements
+# move_forward 400
+# move_right 100
 # rotate_relative 90
 
 echo ""

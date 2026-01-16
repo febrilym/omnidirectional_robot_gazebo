@@ -1,17 +1,29 @@
 <launch>
   <!-- arg name -->
   <arg name="robot_name" default="robot_1"/>
-
-  <!-- arg position -->
-  <arg name="x_pos" default="5.0"/>
-  <arg name="y_pos" default="0.77"/>
+  
+  <!-- arg position robot -->
+  <arg name="x_pos" default="6.0"/>
+  <arg name="y_pos" default="4.0"/>
   <arg name="z_pos" default="0.08"/>
-  <arg name="yaw" default="1.57"/>
+  <arg name="yaw" default="0.0"/>
+  
+  <!-- arg obstacle 1 -->
+  <arg name="obstacle1_x" default="8.5"/>
+  <arg name="obstacle1_y" default="4.0"/>
+  <arg name="obstacle1_z" default="0.08"/>  <!-- Diubah: 0.9/2 = 0.45 -->
+  <arg name="obstacle1_yaw" default="0.0"/>
+  
+  <!-- arg obstacle 2 -->
+  <arg name="obstacle2_x" default="10.0"/>
+  <arg name="obstacle2_y" default="3.0"/>
+  <arg name="obstacle2_z" default="0.08"/>  <!-- Diubah: 0.9/2 = 0.45 -->
+  <arg name="obstacle2_yaw" default="0.0"/>
   
   <!-- set environment variable -->
   <env name="GAZEBO_PLUGIN_PATH" value="/opt/ros/noetic/lib:$(optenv GAZEBO_PLUGIN_PATH)"/>
   
-  <!-- soad urdf to parameter server -->
+  <!-- load urdf to parameter server -->
   <param name="robot_description" 
          command="$(find xacro)/xacro '$(find robot_description)/robots/soccer_robot.urdf.xacro' 
                   robot_name:=$(arg robot_name)"/>
@@ -29,6 +41,25 @@
         args="-param robot_description -urdf -model $(arg robot_name)
               -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -Y $(arg yaw)"
         respawn="false" output="screen"/>
+  
+  <!-- Generate obstacle descriptions -->
+  <param name="obstacle1_description" 
+         command="$(find xacro)/xacro '$(find robot_description)/urdf/obstacle.urdf.xacro' name:=obstacle1"/>
+  
+  <param name="obstacle2_description" 
+         command="$(find xacro)/xacro '$(find robot_description)/urdf/obstacle.urdf.xacro' name:=obstacle2"/>
+  
+  <!-- spawn obstacle 1 -->
+  <node name="spawn_obstacle1" pkg="gazebo_ros" type="spawn_model"
+        args="-param obstacle1_description -urdf -model obstacle1
+              -x $(arg obstacle1_x) -y $(arg obstacle1_y) -z $(arg obstacle1_z) -Y $(arg obstacle1_yaw)"
+        output="screen"/>
+  
+  <!-- spawn obstacle 2 -->
+  <node name="spawn_obstacle2" pkg="gazebo_ros" type="spawn_model"
+        args="-param obstacle2_description -urdf -model obstacle2
+              -x $(arg obstacle2_x) -y $(arg obstacle2_y) -z $(arg obstacle2_z) -Y $(arg obstacle2_yaw)"
+        output="screen"/>
   
   <!-- load & spawn controllers -->
   <rosparam file="$(find soccer_robot_control)/config/soccer_robot_control.yaml" command="load" ns="$(arg robot_name)"/>
